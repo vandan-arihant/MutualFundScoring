@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: equity-mf-scoring-api
+    runtime: python
+    plan: free
+    rootDir: EquityMFScoringModel/code
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn api:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.12
+      - key: SCHEME_MASTER
+        sync: false
+      - key: RISK
+        sync: false
+      - key: REFRESH_TOKEN
+        sync: false
+      - key: EXTRA_CORS_ORIGINS
+        sync: false
+      - key: REFRESH_HOUR
+        value: "6"
+      - key: REFRESH_MINUTE
+        value: "30"
+      - key: REFRESH_TZ
+        value: Asia/Kolkata
