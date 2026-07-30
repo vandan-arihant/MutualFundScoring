@@ -1,0 +1,223 @@
+/* Rendered inside FundModal's scrolling body. */
+
+.detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  padding: var(--sp-5);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(22rem, 100%), 1fr));
+  gap: var(--sp-4);
+}
+
+.card {
+  padding: var(--sp-5);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.cardTitle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-4);
+  padding-bottom: var(--sp-3);
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  font-size: var(--text-md);
+  font-weight: 700;
+}
+
+.cardHint {
+  color: var(--text-subtle);
+  font-size: var(--text-xs);
+  font-weight: 400;
+}
+
+/* ------------------------------- field list ------------------------------ */
+
+.fields {
+  display: grid;
+  gap: var(--sp-3);
+  margin: 0;
+}
+
+.field {
+  display: grid;
+  grid-template-columns: 11rem 1fr;
+  gap: var(--sp-4);
+  align-items: baseline;
+}
+
+.fieldLabel {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.fieldValue {
+  margin: 0;
+  color: var(--text);
+  font-size: var(--text-sm);
+  overflow-wrap: anywhere;
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.big {
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+
+/* ----------------------------- group scores ----------------------------- */
+
+.groupScores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-top: var(--sp-5);
+  padding-top: var(--sp-4);
+  border-top: 1px dashed var(--border);
+}
+
+.groupScore {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-1) var(--sp-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--surface-2);
+}
+
+.groupScoreLabel {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-weight: 600;
+}
+
+/* --------------------------- parameter table ---------------------------- */
+
+.paramTableWrap {
+  overflow-x: auto;
+  margin: 0 calc(-1 * var(--sp-2));
+  padding: 0 var(--sp-2);
+}
+
+.paramTable {
+  width: 100%;
+  font-size: var(--text-sm);
+}
+
+.paramTable thead th {
+  padding: var(--sp-1) var(--sp-3);
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-align: left;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.paramTable tbody td,
+.paramTable tbody th {
+  padding: var(--sp-2) var(--sp-3);
+  border-bottom: 1px solid var(--border);
+  font-weight: 400;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.paramTable tbody tr {
+  transition: background var(--transition);
+}
+
+.paramTable tbody tr:hover {
+  background: var(--surface-2);
+}
+
+.paramTable tbody tr:last-child td,
+.paramTable tbody tr:last-child th {
+  border-bottom: 0;
+}
+
+.paramName {
+  color: var(--text);
+  font-weight: 600 !important;
+}
+
+.paramGroup {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  white-space: nowrap;
+}
+
+.right {
+  text-align: right !important;
+  white-space: nowrap;
+}
+
+.center {
+  text-align: center !important;
+}
+
+.valueEntry {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--sp-1);
+}
+
+.valueEntry + .valueEntry {
+  margin-left: var(--sp-3);
+}
+
+.valueEntryLabel {
+  color: var(--text-subtle);
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+}
+
+.textValue {
+  color: var(--text-subtle);
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-style: italic;
+}
+
+/* ------------------------------- exit load ------------------------------ */
+
+.exitLoad {
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+}
+
+@media (max-width: 720px) {
+  .detail {
+    padding: var(--sp-4);
+    gap: var(--sp-3);
+  }
+
+  .card {
+    padding: var(--sp-4);
+  }
+
+  .field {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}

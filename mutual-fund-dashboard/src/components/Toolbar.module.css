@@ -1,0 +1,406 @@
+.toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  padding: var(--sp-5);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.searchRow {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+/* --------------------------------- search -------------------------------- */
+
+.search {
+  position: relative;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  min-width: 0;
+}
+
+.searchIcon {
+  position: absolute;
+  left: var(--sp-3);
+  color: var(--text-subtle);
+  pointer-events: none;
+  transition: color var(--transition);
+}
+
+.search:focus-within .searchIcon {
+  color: var(--brand);
+}
+
+.searchInput {
+  width: 100%;
+  height: var(--control-h);
+  padding: 0 3rem 0 2.75rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: var(--text-base);
+  appearance: none;
+  transition: border-color var(--transition), background var(--transition),
+    box-shadow var(--transition);
+}
+
+.searchInput::placeholder {
+  color: var(--text-subtle);
+}
+
+.searchInput:focus {
+  border-color: var(--brand);
+  background: var(--surface);
+  outline: none;
+  box-shadow: 0 0 0 4px var(--brand-soft);
+}
+
+/* the platform's own clear button would sit on top of ours */
+.searchInput::-webkit-search-cancel-button {
+  appearance: none;
+}
+
+.searchClear {
+  position: absolute;
+  right: var(--sp-2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.875rem;
+  height: 1.875rem;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--text-subtle);
+  transition: background var(--transition), color var(--transition);
+}
+
+.searchClear:hover {
+  background: var(--surface-3);
+  color: var(--danger);
+}
+
+.kbd {
+  position: absolute;
+  right: var(--sp-3);
+  padding: 0.125rem 0.4375rem;
+  border: 1px solid var(--border-strong);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background: var(--surface-3);
+  color: var(--text-subtle);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  pointer-events: none;
+}
+
+/* -------------------------------- buttons -------------------------------- */
+
+.rowActions {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  height: var(--control-h);
+  padding: 0 var(--sp-4);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  transition: border-color var(--transition), background var(--transition),
+    color var(--transition), transform var(--transition);
+}
+
+.button:hover:not(:disabled) {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+  color: var(--brand);
+  transform: translateY(-1px);
+}
+
+.button:disabled {
+  color: var(--text-subtle);
+  opacity: 0.6;
+}
+
+.buttonGhost {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  height: var(--control-h);
+  padding: 0 var(--sp-3);
+  border: 0;
+  border-radius: var(--radius);
+  background: none;
+  color: var(--danger);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  transition: background var(--transition);
+}
+
+.buttonGhost:hover {
+  background: var(--danger-soft);
+}
+
+/* -------------------------------- filters -------------------------------- */
+
+.filterRow,
+.displayRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.displayRow {
+  justify-content: space-between;
+  padding-top: var(--sp-3);
+  border-top: 1px dashed var(--border);
+}
+
+.slider {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  height: var(--control-h-sm);
+  padding: 0 var(--sp-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+
+.sliderLabel {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* A brand-tinted track: filled portion in brand green, remainder neutral. */
+.range {
+  width: 7.5rem;
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(
+    to right,
+    var(--brand-vivid) 0%,
+    var(--brand-vivid) var(--fill, 0%),
+    var(--surface-3) var(--fill, 0%),
+    var(--surface-3) 100%
+  );
+  appearance: none;
+  cursor: pointer;
+}
+
+.range::-webkit-slider-thumb {
+  width: 1.125rem;
+  height: 1.125rem;
+  border: 2px solid var(--surface);
+  border-radius: 50%;
+  background: var(--brand);
+  box-shadow: 0 1px 4px var(--brand-glow);
+  appearance: none;
+  transition: transform var(--transition);
+}
+
+.range::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+.range::-moz-range-thumb {
+  width: 1.125rem;
+  height: 1.125rem;
+  border: 2px solid var(--surface);
+  border-radius: 50%;
+  background: var(--brand);
+}
+
+.sliderValue {
+  min-width: 2.75rem;
+  color: var(--text);
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  text-align: right;
+}
+
+/* -------------------------------- presets -------------------------------- */
+
+.presets {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-1);
+  margin-left: auto;
+}
+
+.presetIcon {
+  margin-right: var(--sp-1);
+  color: var(--accent);
+}
+
+.preset {
+  height: var(--control-h-sm);
+  padding: 0 var(--sp-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  transition: all var(--transition);
+}
+
+.preset:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.presetActive {
+  border-color: transparent;
+  background: var(--accent-gradient);
+  color: #ffffff;
+  box-shadow: 0 2px 10px -3px var(--accent-vivid);
+}
+
+.presetActive:hover {
+  color: #ffffff;
+  filter: brightness(1.06);
+}
+
+/* ------------------------------- segmented ------------------------------- */
+
+.segmented {
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface-3);
+}
+
+.segment {
+  height: 2.125rem;
+  padding: 0 var(--sp-3);
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  transition: background var(--transition), color var(--transition);
+}
+
+.segment:hover {
+  color: var(--text);
+}
+
+.segmentActive {
+  background: var(--surface);
+  color: var(--brand);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ----------------------------- group toggles ----------------------------- */
+
+.groupToggles {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-1);
+}
+
+.groupIcon {
+  color: var(--text-subtle);
+}
+
+.groupCaption {
+  margin-right: var(--sp-1);
+  color: var(--text-subtle);
+  font-size: var(--text-xs);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.chip {
+  height: 2.125rem;
+  padding: 0 var(--sp-3);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-pill);
+  background: none;
+  color: var(--text-subtle);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  transition: all var(--transition);
+}
+
+.chip:hover {
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
+.chipActive {
+  border-style: solid;
+  border-color: var(--brand-soft-border);
+  background: var(--brand-soft);
+  color: var(--brand);
+}
+
+@media (max-width: 1000px) {
+  .presets {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .toolbar {
+    gap: var(--sp-3);
+    padding: var(--sp-4);
+  }
+
+  .searchRow {
+    flex-wrap: wrap;
+  }
+
+  .search {
+    flex-basis: 100%;
+  }
+
+  .rowActions {
+    flex: 1;
+  }
+
+  .button {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .filterRow > *,
+  .displayRow > * {
+    flex: 1 1 auto;
+  }
+
+  .segmented {
+    width: 100%;
+  }
+
+  .segment {
+    flex: 1;
+  }
+}

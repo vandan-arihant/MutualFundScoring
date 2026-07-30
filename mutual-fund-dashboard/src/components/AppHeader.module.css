@@ -1,0 +1,246 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-areas: 'identity meta actions';
+  align-items: center;
+  gap: var(--sp-3) var(--sp-5);
+  padding: var(--sp-4) var(--sp-6);
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+  backdrop-filter: blur(14px) saturate(140%);
+}
+
+/* ------------------------------- identity -------------------------------- */
+
+.identity {
+  grid-area: identity;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  min-width: 0;
+}
+
+.logoLink {
+  display: flex;
+  flex: none;
+  align-items: center;
+  height: 2.125rem;
+  color: var(--text);
+  text-decoration: none;
+  transition: opacity var(--transition);
+}
+
+.logoLink:hover {
+  opacity: 0.82;
+}
+
+.logo {
+  height: 100%;
+}
+
+.divider {
+  width: 1px;
+  height: 2rem;
+  flex: none;
+  background: var(--border-strong);
+}
+
+.titles {
+  min-width: 0;
+}
+
+.title {
+  font-size: var(--text-md);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.subtitle {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* --------------------------------- meta ---------------------------------- */
+
+.meta {
+  grid-area: meta;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--sp-2) var(--sp-3);
+  min-width: 0;
+}
+
+.timestamps {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-1) var(--sp-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--surface-2);
+}
+
+.timestamp {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  font-size: var(--text-xs);
+  white-space: nowrap;
+}
+
+.timestampLabel {
+  color: var(--text-subtle);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.timestamp strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* a slow "live" pulse on the last-updated dot */
+.pulse {
+  width: 7px;
+  height: 7px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--brand-vivid);
+  box-shadow: 0 0 0 0 var(--brand-glow);
+  animation: pulse 2.6s var(--ease) infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 var(--brand-glow);
+  }
+  60%,
+  100% {
+    box-shadow: 0 0 0 7px transparent;
+  }
+}
+
+.clockIcon {
+  color: var(--text-subtle);
+}
+
+.sep {
+  width: 1px;
+  height: 1rem;
+  background: var(--border-strong);
+}
+
+/* -------------------------------- actions -------------------------------- */
+
+.actions {
+  grid-area: actions;
+  display: inline-flex;
+  gap: var(--sp-2);
+}
+
+.refreshButton {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  height: var(--control-h-sm);
+  padding: 0 var(--sp-4);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--brand-gradient);
+  color: var(--brand-contrast);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  box-shadow: 0 2px 10px -2px var(--brand-glow);
+  transition: transform var(--transition), box-shadow var(--transition), filter var(--transition);
+}
+
+.refreshButton:hover:not(:disabled) {
+  filter: brightness(1.05);
+  box-shadow: 0 4px 16px -2px var(--brand-glow);
+  transform: translateY(-1px);
+}
+
+.refreshButton:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.refreshButton:disabled {
+  filter: saturate(0.6);
+  opacity: 0.75;
+}
+
+.refreshIcon {
+  transition: transform var(--dur-slow) var(--ease);
+}
+
+.refreshButton:hover:not(:disabled) .refreshIcon {
+  transform: rotate(-120deg);
+}
+
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--control-h-sm);
+  height: var(--control-h-sm);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-muted);
+  transition: all var(--transition);
+}
+
+.iconButton:hover:not(:disabled) {
+  border-color: var(--accent-soft-border);
+  background: var(--accent-soft);
+  color: var(--accent);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 1100px) {
+  .refreshLabel {
+    display: none;
+  }
+
+  .refreshButton {
+    width: var(--control-h-sm);
+    padding: 0;
+    justify-content: center;
+  }
+}
+
+/* Below this the timestamps drop to their own full-width row, keeping the logo
+   and the action buttons together on the first line. */
+@media (max-width: 900px) {
+  .header {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'identity actions'
+      'meta meta';
+    padding: var(--sp-3) var(--sp-4);
+  }
+
+  .meta {
+    justify-content: flex-start;
+  }
+
+  .timestamps {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 560px) {
+  .divider,
+  .titles {
+    display: none;
+  }
+}

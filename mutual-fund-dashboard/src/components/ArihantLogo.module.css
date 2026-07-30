@@ -1,0 +1,15 @@
+.logo {
+  display: block;
+  height: 100%;
+  width: auto;
+}
+
+/* "Arihant" — #434343 in the source file, which vanishes on a dark surface */
+.ink {
+  fill: currentColor;
+}
+
+/* "PLUS" — keeps the brand green, theme-adjusted for contrast */
+.plus {
+  fill: var(--brand);
+}

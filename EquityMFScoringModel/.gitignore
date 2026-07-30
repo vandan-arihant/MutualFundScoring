@@ -1,0 +1,8 @@
+# holds the live API endpoint URLs -- must never be committed
+.env
+
+# live-serving cache, regenerated on every refresh (output/ stays tracked as the
+# manual CLI export target)
+cache/
+
+.venv/

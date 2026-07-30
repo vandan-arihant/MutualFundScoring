@@ -1,0 +1,159 @@
+"""
+FastAPI service exposing the scored Equity mutual fund universe to the dashboard.
+
+    GET  /api/funds    the whole scored universe + the metadata to render it
+    GET  /api/status   cache/scheduler health, for ops and manual curl checks
+    POST /api/refresh  force a refresh now (also the seam an external scheduler
+                       would call if this ever moves to serverless hosting)
+    GET  /api/health   liveness probe
+
+Every response is served from cache_store's in-memory snapshot, so no request
+ever waits on the upstream feeds. See cache_store for the fail-safe semantics and
+scheduler for the daily refresh.
+
+Run locally:
+    uvicorn api:app --reload --port 8000 --app-dir EquityMFScoringModel/code
+"""
+
+import logging
+import os
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI, Header, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
+
+import scheduler
+from cache_store import get_rows, get_status, load_cache_from_disk, refresh_cache
+from score_intersection_funds import PARAM_CATEGORY, PARAM_LABELS, RATING_BANDS, WEIGHTS
+
+log = logging.getLogger(__name__)
+
+DEV_ORIGINS = ["http://localhost:5173", "http://127.0.0.1:5173"]
+
+
+@asynccontextmanager
+async def lifespan(_app):
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+    load_cache_from_disk()   # serve last-good data immediately, before any fetch
+    scheduler.start()        # cron job + startup catch-up if that data is stale
+    try:
+        yield
+    finally:
+        scheduler.shutdown()
+
+
+app = FastAPI(
+    title="Equity MF Scoring API",
+    version="1.0.0",
+    description="Daily-refreshed Equity mutual fund scores, built from the 9-parameter scoring matrix.",
+    lifespan=lifespan,
+)
+
+# The full universe with per-fund metrics is a few MB of very repetitive JSON --
+# gzip takes it to a fraction of that for a table the browser loads once a day.
+app.add_middleware(GZipMiddleware, minimum_size=1000)
+
+# CORS rather than a Vite dev proxy, so the same build works whether or not the
+# frontend ends up on the same origin once hosting is decided.
+_extra_origins = [o.strip() for o in (os.getenv("EXTRA_CORS_ORIGINS") or "").split(",") if o.strip()]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=DEV_ORIGINS + _extra_origins,
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"],
+)
+
+
+def _columns():
+    """The 9 scored parameters as display metadata, derived from the scoring
+    module's own PARAM_LABELS / PARAM_CATEGORY / WEIGHTS -- so the frontend never
+    keeps a second copy of the labels, groupings or weights that could drift out
+    of sync with the model."""
+    total = sum(WEIGHTS.values())
+    return [
+        {
+            "key": key,
+            "label": PARAM_LABELS[key],
+            "group": PARAM_CATEGORY[key],
+            "weight": round(WEIGHTS[key] / total, 4),
+        }
+        for key in WEIGHTS
+    ]
+
+
+def _groups():
+    """Distinct parameter groups in matrix order (Return, Risk, Cost & Operational),
+    for the table's grouped header row."""
+    seen = []
+    for key in WEIGHTS:
+        group = PARAM_CATEGORY[key]
+        if group not in seen:
+            seen.append(group)
+    return seen
+
+
+def _ratings():
+    """The composite-score -> rating/recommendation legend, so the dashboard can
+    label and colour-code scores using the matrix's own bands."""
+    return [
+        {"min_composite": cutoff, "rating": rating, "recommendation": recommendation}
+        for cutoff, rating, recommendation in RATING_BANDS
+    ]
+
+
+@app.get("/api/funds")
+def get_funds():
+    """The whole scored universe plus the metadata needed to render it.
+
+    `next_refresh_at` is the contract the dashboard's refetch logic runs on: it
+    lets the browser decide locally whether new data can possibly exist yet, and
+    skip the request entirely when it can't.
+    """
+    status = get_status()
+    rows = get_rows()
+    return {
+        "count": len(rows),
+        "data": rows,
+        "columns": _columns(),
+        "groups": _groups(),
+        "ratings": _ratings(),
+        "last_updated": status["last_updated"],
+        "next_refresh_at": scheduler.next_run_time(),
+        "last_error": status["last_error"],
+        "source_mode": status["source_mode"],
+    }
+
+
+@app.get("/api/status")
+def get_service_status():
+    """Cache and scheduler health. Cheap enough to poll, though the dashboard
+    doesn't -- it's here for ops checks and debugging."""
+    return {**get_status(), "next_refresh_at": scheduler.next_run_time()}
+
+
+@app.post("/api/refresh")
+def post_refresh(x_refresh_token: str | None = Header(default=None)):
+    """Force a refresh synchronously and return the resulting status.
+
+    Protected by a shared secret only if REFRESH_TOKEN is set in .env; left open
+    otherwise, for local development.
+    """
+    expected = (os.getenv("REFRESH_TOKEN") or "").strip()
+    if expected and x_refresh_token != expected:
+        raise HTTPException(status_code=401, detail="missing or invalid X-Refresh-Token")
+    result = refresh_cache("manual")
+    return {**result, "next_refresh_at": scheduler.next_run_time()}
+
+
+@app.get("/api/health")
+def get_health():
+    return {"status": "ok"}
+
+
+@app.get("/")
+def get_root():
+    return {
+        "service": "Equity MF Scoring API",
+        "endpoints": ["/api/funds", "/api/status", "/api/refresh", "/api/health", "/docs"],
+    }

@@ -1,0 +1,12 @@
+# backend service
+fastapi>=0.115
+uvicorn[standard]>=0.30
+requests>=2.32
+python-dotenv>=1.0
+# 4.x is a ground-up rewrite with a different API and still pre-release
+apscheduler>=3.10,<4
+
+# scoring model (already present in .venv)
+pandas>=2.2
+numpy>=1.26
+openpyxl>=3.1

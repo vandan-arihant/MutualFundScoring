@@ -1,0 +1,199 @@
+/* Four compact stat cards on the first row, the rating spread across the
+   second. Putting the spread in the same row as the stats made the whole row as
+   tall as the spread, leaving the four figures floating in empty cards. */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--sp-4);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  /* equal-height cards, so distribute rather than leaving the figure floating
+     with dead space beneath it */
+  justify-content: space-between;
+  gap: var(--sp-1);
+  min-height: 9.5rem;
+  padding: var(--sp-5);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  animation: riseIn var(--dur-base) var(--ease) backwards;
+  transition: box-shadow var(--transition), transform var(--transition);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.card:nth-child(2) { animation-delay: 40ms; }
+.card:nth-child(3) { animation-delay: 80ms; }
+.card:nth-child(4) { animation-delay: 120ms; }
+.card:nth-child(5) { animation-delay: 160ms; }
+
+.cardWide {
+  grid-column: 1 / -1;
+  justify-content: flex-start;
+  min-height: 0;
+  min-width: 0;
+}
+
+.label {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.value {
+  color: var(--text);
+  font-size: var(--text-2xl);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+}
+
+/* the one figure that deserves the brand gradient */
+.valueBrand {
+  width: fit-content;
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hint {
+  color: var(--text-subtle);
+  font-size: var(--text-xs);
+}
+
+.meter {
+  display: block;
+  height: 5px;
+  margin: var(--sp-1) 0;
+  border-radius: var(--radius-pill);
+  background: var(--surface-3);
+  overflow: hidden;
+}
+
+.meterFill {
+  display: block;
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: var(--brand-gradient);
+  transition: width var(--dur-slow) var(--ease);
+}
+
+/* ----------------------------- rating spread ----------------------------- */
+
+.spreadHint {
+  color: var(--text-subtle);
+  font-size: var(--text-xs);
+}
+
+.spread {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: var(--sp-2) var(--sp-4);
+  margin-top: var(--sp-2);
+}
+
+.spreadItem {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--sp-2);
+  width: 100%;
+  padding: var(--sp-1) var(--sp-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: none;
+  text-align: left;
+  transition: background var(--transition), border-color var(--transition);
+}
+
+.spreadItem:hover {
+  background: var(--surface-2);
+  border-color: var(--border);
+}
+
+.spreadItemActive {
+  border-color: var(--brand-soft-border);
+  background: var(--brand-soft);
+}
+
+.spreadLabel {
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.spreadItemActive .spreadLabel {
+  color: var(--brand);
+  font-weight: 600;
+}
+
+.spreadCount {
+  color: var(--text);
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+.spreadBar {
+  grid-column: 1 / -1;
+  display: block;
+  height: 3px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-3);
+  overflow: hidden;
+}
+
+.spreadBarFill {
+  display: block;
+  height: 100%;
+  border-radius: var(--radius-pill);
+  transition: width var(--dur-slow) var(--ease);
+}
+
+.fill1 { background: var(--score-1-fg); }
+.fill2 { background: var(--score-2-fg); }
+.fill3 { background: var(--score-3-fg); }
+.fill4 { background: var(--score-4-fg); }
+.fill5 { background: var(--score-5-fg); }
+
+@media (max-width: 900px) {
+  .cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Two spread columns on a phone leave no room to ellipsize "Below Average",
+   so let the label wrap instead of truncating it. */
+@media (max-width: 620px) {
+  .spread {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .spreadLabel {
+    overflow: visible;
+    white-space: normal;
+  }
+}
+
+@media (max-width: 420px) {
+  .card {
+    padding: var(--sp-4);
+  }
+
+  .value {
+    font-size: var(--text-xl);
+  }
+}

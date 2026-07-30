@@ -1,0 +1,452 @@
+/* ==========================================================================
+   Arihant Capital design tokens.
+
+   Palette, typeface and motion are ported from the Arihant GoalPlanner Flutter
+   app (lib/core/theme/app_colors.dart, app_gradients.dart, app_motion.dart) so
+   this dashboard reads as part of the same product family:
+
+     brand green   #61CE64  (seed)   dark #3FA34D   bright #50E570
+     accent purple #AC64E2           dark #7A3BA9
+     ink           #1A1A2E   navy #1B2559
+     typeface      Jost (bundled variable font)
+     motion        150 / 220 / 320ms, easeOutCubic
+
+   Component styles live in co-located *.module.css files. Theming: light is the
+   default, prefers-color-scheme switches automatically, and an explicit
+   [data-theme] on <html> overrides both so the in-app toggle always wins.
+   ========================================================================== */
+
+@font-face {
+  font-family: 'Jost';
+  src: url('./assets/fonts/Jost-VariableFont.ttf') format('truetype-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --font-sans: 'Jost', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas,
+    'Liberation Mono', monospace;
+
+  /* Spacing — deliberately roomier than a dense data grid would use, so the
+     page breathes. Every gap/padding in the app comes from this scale. */
+  --sp-1: 0.375rem;
+  --sp-2: 0.625rem;
+  --sp-3: 0.875rem;
+  --sp-4: 1.25rem;
+  --sp-5: 1.625rem;
+  --sp-6: 2rem;
+  --sp-8: 2.75rem;
+  --sp-10: 3.5rem;
+
+  --radius-sm: 9px;
+  --radius: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 26px;
+  --radius-pill: 999px;
+
+  /* Type scale — one step up across the board from a typical dense table. */
+  --text-xs: 0.8125rem;
+  --text-sm: 0.9375rem;
+  --text-base: 1rem;
+  --text-md: 1.125rem;
+  --text-lg: 1.375rem;
+  --text-xl: 1.75rem;
+  --text-2xl: 2.25rem;
+
+  /* Control sizing, so inputs/buttons/rows stay on one rhythm. */
+  --control-h: 3rem;
+  --control-h-sm: 2.5rem;
+  --row-h: 4rem;
+
+  /* Motion, from AppMotion. */
+  --ease: cubic-bezier(0.215, 0.61, 0.355, 1); /* easeOutCubic */
+  --ease-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-fast: 150ms;
+  --dur-base: 220ms;
+  --dur-slow: 320ms;
+  --transition: var(--dur-fast) var(--ease);
+
+  /* shared by the table's sticky column offsets */
+  --col-rank-width: 4.5rem;
+  --col-fund-width: 20rem;
+}
+
+/* ------------------------------- light -------------------------------- */
+:root,
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --bg: #f4f7f4;
+  --bg-grad:
+    radial-gradient(78% 58% at 8% -8%, rgba(97, 206, 100, 0.24) 0%, rgba(97, 206, 100, 0) 62%),
+    radial-gradient(62% 48% at 98% 0%, rgba(172, 100, 226, 0.2) 0%, rgba(172, 100, 226, 0) 60%),
+    linear-gradient(180deg, #f7fbf7 0%, #f2f5f8 100%);
+  --surface: #ffffff;
+  --surface-2: #f7faf8;
+  --surface-3: #eef4f0;
+  --surface-hover: #f0f9f2;
+
+  --border: #e5e2e7;
+  --border-strong: #d3dcd6;
+
+  --text: #1a1a2e;
+  --text-muted: #62667d;
+  --text-subtle: #9295a8;
+
+  /* brand green */
+  --brand: #2f9e42;
+  --brand-vivid: #61ce64;
+  --brand-hover: #268537;
+  --brand-contrast: #ffffff;
+  --brand-soft: #e8f8ea;
+  --brand-soft-border: #b6e9bd;
+  --brand-glow: rgba(97, 206, 100, 0.4);
+  --brand-gradient: linear-gradient(135deg, #76d78a 0%, #61ce64 55%, #3fa34d 100%);
+
+  /* accent purple */
+  --accent: #7a3ba9;
+  --accent-vivid: #ac64e2;
+  --accent-soft: #f5ecfb;
+  --accent-soft-border: #dcc4f0;
+  --accent-gradient: linear-gradient(135deg, #e5c3ff 0%, #c9baff 45%, #7a3ba9 100%);
+
+  --danger: #d32f2f;
+  --danger-soft: #fdeceb;
+  --danger-border: #f6b6b3;
+  --warn: #c26a00;
+  --warn-soft: #fdf3e9;
+  --warn-border: #ffcf8a;
+  --ok: #2f9e42;
+  --ok-soft: #e8f8ea;
+
+  --shadow-sm: 0 1px 2px rgba(26, 26, 46, 0.05);
+  --shadow: 0 2px 6px rgba(26, 26, 46, 0.07), 0 1px 2px rgba(26, 26, 46, 0.05);
+  --shadow-md: 0 8px 20px -6px rgba(26, 26, 46, 0.14), 0 2px 6px rgba(26, 26, 46, 0.05);
+  --shadow-lg: 0 22px 48px -14px rgba(26, 26, 46, 0.24), 0 4px 12px rgba(26, 26, 46, 0.08);
+  --shadow-sticky: 12px 0 16px -12px rgba(26, 26, 46, 0.14);
+  --backdrop: rgba(26, 26, 46, 0.42);
+
+  /* Score scale 1..5, built from the brand palette rather than a generic ramp:
+     brand green -> brand lime -> navy on the brand blue tint -> brand orange ->
+     error red. Distinct hue AND lightness at every step, so the ordering
+     survives colour-vision deficiency and greyscale printing. */
+  --score-1-fg: #d32f2f;
+  --score-1-bg: #fdeceb;
+  --score-1-br: #f4a9a5;
+  --score-2-fg: #c26a00;
+  --score-2-bg: #fdf3e9;
+  --score-2-br: #ffc275;
+  --score-3-fg: #2b3d78;
+  --score-3-bg: #e8effe;
+  --score-3-br: #b4c8f2;
+  --score-4-fg: #5f8b16;
+  --score-4-bg: #f7ffd6;
+  --score-4-br: #d4e157;
+  --score-5-fg: #2f9e42;
+  --score-5-bg: #e8f8ea;
+  --score-5-br: #9ce56e;
+}
+
+/* -------------------------------- dark -------------------------------- */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+
+    --bg: #0b1014;
+    --bg-grad:
+      radial-gradient(78% 58% at 8% -8%, rgba(97, 206, 100, 0.2) 0%, rgba(97, 206, 100, 0) 60%),
+      radial-gradient(62% 48% at 98% 0%, rgba(172, 100, 226, 0.19) 0%, rgba(172, 100, 226, 0) 58%),
+      linear-gradient(180deg, #0e1519 0%, #0b1014 100%);
+    --surface: #141b21;
+    --surface-2: #18212a;
+    --surface-3: #1f2a33;
+    --surface-hover: #1c2a25;
+
+    --border: #26333c;
+    --border-strong: #37474f;
+
+    --text: #e9f1ec;
+    --text-muted: #9aa8b2;
+    --text-subtle: #6f7d88;
+
+    --brand: #61ce64;
+    --brand-vivid: #7ee08a;
+    --brand-hover: #8ce892;
+    --brand-contrast: #062611;
+    --brand-soft: #12291a;
+    --brand-soft-border: #29563a;
+    --brand-glow: rgba(97, 206, 100, 0.34);
+    --brand-gradient: linear-gradient(135deg, #9ce56e 0%, #61ce64 55%, #3fa34d 100%);
+
+    --accent: #c58ff0;
+    --accent-vivid: #ac64e2;
+    --accent-soft: #241a30;
+    --accent-soft-border: #4a3363;
+    --accent-gradient: linear-gradient(135deg, #e5c3ff 0%, #c9baff 45%, #ac64e2 100%);
+
+    --danger: #ff9d95;
+    --danger-soft: #2d1615;
+    --danger-border: #5e2a26;
+    --warn: #ffc86a;
+    --warn-soft: #2c2111;
+    --warn-border: #5d4620;
+    --ok: #7ee08a;
+    --ok-soft: #12291a;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.42);
+    --shadow: 0 2px 6px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 8px 20px -6px rgba(0, 0, 0, 0.6), 0 2px 6px rgba(0, 0, 0, 0.42);
+    --shadow-lg: 0 22px 48px -14px rgba(0, 0, 0, 0.72), 0 4px 12px rgba(0, 0, 0, 0.5);
+    --shadow-sticky: 12px 0 16px -12px rgba(0, 0, 0, 0.6);
+    --backdrop: rgba(4, 8, 10, 0.66);
+
+    --score-1-fg: #ff9d95;
+    --score-1-bg: #2d1615;
+    --score-1-br: #5e2a26;
+    --score-2-fg: #ffc86a;
+    --score-2-bg: #2c2111;
+    --score-2-br: #5d4620;
+    --score-3-fg: #9fbcf5;
+    --score-3-bg: #151f33;
+    --score-3-br: #2b3f66;
+    --score-4-fg: #cfe25c;
+    --score-4-bg: #212a12;
+    --score-4-br: #4c5c1e;
+    --score-5-fg: #7ee08a;
+    --score-5-bg: #12291a;
+    --score-5-br: #2f7a41;
+  }
+}
+
+/* An explicit dark choice must beat the light defaults whatever the OS says. */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --bg: #0b1014;
+  --bg-grad:
+    radial-gradient(78% 58% at 8% -8%, rgba(97, 206, 100, 0.2) 0%, rgba(97, 206, 100, 0) 60%),
+    radial-gradient(62% 48% at 98% 0%, rgba(172, 100, 226, 0.19) 0%, rgba(172, 100, 226, 0) 58%),
+    linear-gradient(180deg, #0e1519 0%, #0b1014 100%);
+  --surface: #141b21;
+  --surface-2: #18212a;
+  --surface-3: #1f2a33;
+  --surface-hover: #1c2a25;
+
+  --border: #26333c;
+  --border-strong: #37474f;
+
+  --text: #e9f1ec;
+  --text-muted: #9aa8b2;
+  --text-subtle: #6f7d88;
+
+  --brand: #61ce64;
+  --brand-vivid: #7ee08a;
+  --brand-hover: #8ce892;
+  --brand-contrast: #062611;
+  --brand-soft: #12291a;
+  --brand-soft-border: #29563a;
+  --brand-glow: rgba(97, 206, 100, 0.34);
+  --brand-gradient: linear-gradient(135deg, #9ce56e 0%, #61ce64 55%, #3fa34d 100%);
+
+  --accent: #c58ff0;
+  --accent-vivid: #ac64e2;
+  --accent-soft: #241a30;
+  --accent-soft-border: #4a3363;
+  --accent-gradient: linear-gradient(135deg, #e5c3ff 0%, #c9baff 45%, #ac64e2 100%);
+
+  --danger: #ff9d95;
+  --danger-soft: #2d1615;
+  --danger-border: #5e2a26;
+  --warn: #ffc86a;
+  --warn-soft: #2c2111;
+  --warn-border: #5d4620;
+  --ok: #7ee08a;
+  --ok-soft: #12291a;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.42);
+  --shadow: 0 2px 6px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 20px -6px rgba(0, 0, 0, 0.6), 0 2px 6px rgba(0, 0, 0, 0.42);
+  --shadow-lg: 0 22px 48px -14px rgba(0, 0, 0, 0.72), 0 4px 12px rgba(0, 0, 0, 0.5);
+  --shadow-sticky: 12px 0 16px -12px rgba(0, 0, 0, 0.6);
+  --backdrop: rgba(4, 8, 10, 0.66);
+
+  --score-1-fg: #ff9d95;
+  --score-1-bg: #2d1615;
+  --score-1-br: #5e2a26;
+  --score-2-fg: #ffc86a;
+  --score-2-bg: #2c2111;
+  --score-2-br: #5d4620;
+  --score-3-fg: #9fbcf5;
+  --score-3-bg: #151f33;
+  --score-3-br: #2b3f66;
+  --score-4-fg: #cfe25c;
+  --score-4-bg: #212a12;
+  --score-4-br: #4c5c1e;
+  --score-5-fg: #7ee08a;
+  --score-5-bg: #12291a;
+  --score-5-br: #2f7a41;
+}
+
+/* ------------------------------- reset -------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  background-image: var(--bg-grad);
+  background-attachment: fixed;
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: 400;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+figure {
+  margin: 0;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 700;
+  line-height: 1.22;
+  letter-spacing: -0.015em;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  color: var(--brand);
+}
+
+/* Visible, consistent keyboard focus; mouse clicks don't trigger it. */
+:focus-visible {
+  outline: 2px solid var(--brand-vivid);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+::selection {
+  background: var(--brand-soft);
+  color: var(--text);
+}
+
+/* thin, theme-aware scrollbars for the wide table region */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border: 3px solid transparent;
+  border-radius: var(--radius-pill);
+  background-clip: content-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--text-subtle);
+  background-clip: content-box;
+}
+
+/* for labels that must exist for assistive tech but not be shown */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Shared entrance animations, used with a per-index delay for the staggered
+   cascade the brand motion spec describes. */
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
