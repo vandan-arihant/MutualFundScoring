@@ -2,3 +2,9 @@
 .DS_Store
 __pycache__/
 *.py[cod]
+
+# Deployment configuration -- holds hostnames and REFRESH_TOKEN.
+# .env.example is the checked-in, placeholder-only template.
+.env
+.env.*
+!.env.example

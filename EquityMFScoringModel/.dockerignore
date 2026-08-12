@@ -1,0 +1,15 @@
+# Never bake secrets into an image layer.
+.env
+.env.*
+!.env.example
+
+# Runtime state -- the container gets its own volume for this.
+cache/
+
+# CLI export target: several MB of .xlsx/.json the service never reads.
+output/
+
+.venv/
+__pycache__/
+*.py[cod]
+.DS_Store

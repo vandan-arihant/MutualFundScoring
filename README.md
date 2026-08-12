@@ -97,21 +97,43 @@ returns 503 rather than running unauthenticated.
 
 ## Deployment
 
-`render.yaml` is a Render blueprint covering both services. Set these in the
-Render dashboard rather than in the file — they are marked `sync: false`:
+Both halves ship a Dockerfile, so the server needs only Git, Docker Engine and
+Docker Compose:
 
-- `SCHEME_MASTER`, `RISK` — the feed URLs
-- `REFRESH_TOKEN` — required, since the blueprint sets `APP_ENV=production`
-- `EXTRA_CORS_ORIGINS` — the dashboard's URL
-- `VITE_API_BASE_URL` — the API's URL, read at **build** time, so changing it
-  needs a redeploy of the static site
+```bash
+git clone https://github.com/Vandan1423/MutualFundScoring.git
+cd MutualFundScoring
+cp .env.example .env        # fill in, see below
+docker compose up -d --build
+```
 
-Setting `APP_ENV=production` drops the localhost CORS origins and makes
-`REFRESH_TOKEN` mandatory.
+Three values must be set in `.env`; the rest have working defaults:
 
-On Render's free plan a web service spins down after ~15 minutes idle and the
-in-process scheduler stops with it, so the 06:30 IST refresh is missed whenever
-the service is asleep. It self-heals — the next cold start sees data older than
-24h and runs a catch-up refresh before serving. For a guaranteed on-time daily
-refresh, use a paid instance or drive `POST /api/refresh` from an external
-scheduler.
+| | |
+|---|---|
+| `API_PUBLIC_URL` | the API's public URL **as the browser reaches it** |
+| `DASHBOARD_PUBLIC_URL` | the dashboard's public URL, passed to the API as its allowed CORS origin |
+| `REFRESH_TOKEN` | shared secret for `POST /api/refresh` (`openssl rand -base64 48`) |
+
+Compose sets `APP_ENV=production`, which drops the localhost CORS origins and
+makes `REFRESH_TOKEN` mandatory.
+
+Two things that are easy to get wrong:
+
+- **The dashboard does not proxy the API.** The browser loads the dashboard from
+  one hostname and calls the API directly on another, so both must be reachable
+  from the browser — and `DASHBOARD_PUBLIC_URL` must match the address bar
+  exactly, or every request is blocked by CORS.
+- **`API_PUBLIC_URL` is baked into the bundle at build time**, not read at
+  runtime. Changing it needs `docker compose up -d --build`, not a restart. It
+  must never be `http://api:8000`, which only resolves inside the Compose
+  network.
+
+Both containers pin `TZ=Asia/Kolkata`, since the refresh is scheduled in IST.
+The API's cache volume (`/app/cache`) only holds the last good result and does
+not need backing up — it exists so a restart serves data immediately instead of
+an empty table.
+
+For the full UAT deployment requirements — whitelisting, sizing, TLS and the
+confirmations needed from the infrastructure team — see Section 3 of the
+deployment requirements document.

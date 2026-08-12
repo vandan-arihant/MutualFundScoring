@@ -1,0 +1,62 @@
+# Equity Mutual Fund Scoring -- UAT deployment.
+#
+#   cp .env.example .env     # then fill it in, see Section 3.8
+#   docker compose up -d --build
+#
+# Two containers, no database server. The API holds its scored universe in
+# memory and mirrors it to a persistent volume; the dashboard is static files
+# served by nginx.
+
+services:
+  api:
+    build:
+      context: ./EquityMFScoringModel
+    image: equity-mf-scoring-api:latest
+    container_name: equity-mf-scoring-api
+    restart: unless-stopped
+    environment:
+      # Drops the localhost CORS origins and makes REFRESH_TOKEN mandatory.
+      APP_ENV: production
+      # The two CMOTS feeds. Leave either blank to serve that feed from the
+      # snapshot baked into the image instead -- the service still starts.
+      SCHEME_MASTER: ${SCHEME_MASTER:-}
+      RISK: ${RISK:-}
+      # Required in production; POST /api/refresh returns 503 without it.
+      REFRESH_TOKEN: ${REFRESH_TOKEN:?set REFRESH_TOKEN in .env}
+      # The dashboard's public URL. The browser calls the API cross-origin, so
+      # this must be set or every request is blocked by CORS.
+      EXTRA_CORS_ORIGINS: ${DASHBOARD_PUBLIC_URL:?set DASHBOARD_PUBLIC_URL in .env}
+      REFRESH_HOUR: ${REFRESH_HOUR:-6}
+      REFRESH_MINUTE: ${REFRESH_MINUTE:-30}
+      REFRESH_TZ: Asia/Kolkata
+      API_VERIFY_SSL: ${API_VERIFY_SSL:-true}
+      TZ: Asia/Kolkata
+    ports:
+      # Bound to localhost by default so the port is not exposed directly to the
+      # network -- nginx or the load balancer terminates TLS in front of it.
+      - "${API_BIND:-127.0.0.1}:${API_PORT:-8000}:8000"
+    volumes:
+      # Survives restarts so the service serves last-good data immediately
+      # instead of an empty table while the first refresh runs.
+      - api-cache:/app/cache
+
+  dashboard:
+    build:
+      context: ./mutual-fund-dashboard
+      args:
+        # Baked into the bundle at build time, so this must be the API's public
+        # hostname as the BROWSER sees it -- never http://api:8000, which only
+        # resolves inside the Compose network.
+        VITE_API_BASE_URL: ${API_PUBLIC_URL:?set API_PUBLIC_URL in .env}
+    image: equity-mf-scoring-dashboard:latest
+    container_name: equity-mf-scoring-dashboard
+    restart: unless-stopped
+    environment:
+      TZ: Asia/Kolkata
+    ports:
+      - "${DASHBOARD_BIND:-127.0.0.1}:${DASHBOARD_PORT:-8080}:80"
+    # No depends_on: the dashboard is static files and never talks to the API
+    # container. The browser calls the API directly, over the public hostname.
+
+volumes:
+  api-cache:

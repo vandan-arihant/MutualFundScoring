@@ -1,0 +1,13 @@
+# Never bake the environment file into an image layer -- VITE_API_BASE_URL is
+# passed as a build arg instead.
+.env
+.env.*
+!.env.example
+
+# Reinstalled inside the build stage; copying the host's copy would be slow and
+# can carry platform-specific binaries.
+node_modules/
+dist/
+
+.DS_Store
+*.log
