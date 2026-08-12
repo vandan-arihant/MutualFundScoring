@@ -1,16 +1,33 @@
-# React + Vite
+# Equity Fund Scoring — dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + Vite frontend for the equity mutual fund scoring API. See the
+[root README](../README.md) for the project as a whole.
 
-Currently, two official plugins are available:
+```bash
+npm install
+cp .env.example .env    # VITE_API_BASE_URL; defaults to http://localhost:8000
+npm run dev             # dev server on :5173
+npm run build           # production build -> dist/
+npm run lint
+```
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+The backend must be allowed to serve this origin. Locally that works out of the
+box; for a deployed build, add the dashboard's URL to `EXTRA_CORS_ORIGINS` on
+the API.
 
-## React Compiler
+`VITE_API_BASE_URL` is inlined into the bundle at **build** time, not read at
+runtime — changing it requires rebuilding.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Layout
 
-## Expanding the ESLint configuration
+```
+src/
+  api/         config + the fetch layer (ApiError carries user-safe messages)
+  components/  presentational components, one CSS module each
+  hooks/       useFundData (fetch + refetch scheduling), theme, media query
+  lib/         column definitions, formatting, filter/sort/paginate
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+The API answers from an in-memory cache and reports `next_refresh_at`, so
+`useFundData` skips refetching entirely until that deadline passes, then arms
+one precise timer for the moment it does.

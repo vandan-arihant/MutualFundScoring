@@ -11,6 +11,16 @@ Every response is served from cache_store's in-memory snapshot, so no request
 ever waits on the upstream feeds. See cache_store for the fail-safe semantics and
 scheduler for the daily refresh.
 
+Configuration (EquityMFScoringModel/.env, gitignored -- see .env.example):
+
+    APP_ENV              development | production            (default development)
+    EXTRA_CORS_ORIGINS   comma-separated browser origins allowed to call this API
+    REFRESH_TOKEN        shared secret for POST /api/refresh
+
+Setting APP_ENV=production tightens two things that are only safe on a private
+machine: the localhost CORS origins are dropped, and POST /api/refresh refuses
+to serve without REFRESH_TOKEN configured instead of running unauthenticated.
+
 Run locally:
     uvicorn api:app --reload --port 8000 --app-dir EquityMFScoringModel/code
 """
@@ -30,6 +40,12 @@ from score_intersection_funds import PARAM_CATEGORY, PARAM_LABELS, RATING_BANDS,
 log = logging.getLogger(__name__)
 
 DEV_ORIGINS = ["http://localhost:5173", "http://127.0.0.1:5173"]
+
+
+def _is_production():
+    """APP_ENV gates the two things that are safe locally but not on a public
+    URL: the localhost CORS origins, and an unauthenticated POST /api/refresh."""
+    return (os.getenv("APP_ENV") or "development").strip().lower() == "production"
 
 
 @asynccontextmanager
@@ -55,11 +71,16 @@ app = FastAPI(
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 # CORS rather than a Vite dev proxy, so the same build works whether or not the
-# frontend ends up on the same origin once hosting is decided.
+# frontend ends up on the same origin once hosting is decided. Deployed origins
+# come from EXTRA_CORS_ORIGINS; the localhost pair is dropped in production so a
+# public instance doesn't advertise a dev setup it can't actually serve.
 _extra_origins = [o.strip() for o in (os.getenv("EXTRA_CORS_ORIGINS") or "").split(",") if o.strip()]
+_allowed_origins = _extra_origins if _is_production() else DEV_ORIGINS + _extra_origins
+if not _allowed_origins:
+    log.warning("no CORS origins configured -- set EXTRA_CORS_ORIGINS to the dashboard's URL")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=DEV_ORIGINS + _extra_origins,
+    allow_origins=_allowed_origins,
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
@@ -136,11 +157,18 @@ def get_service_status():
 def post_refresh(x_refresh_token: str | None = Header(default=None)):
     """Force a refresh synchronously and return the resulting status.
 
-    Protected by a shared secret only if REFRESH_TOKEN is set in .env; left open
-    otherwise, for local development.
+    Protected by the REFRESH_TOKEN shared secret. That token is optional in
+    development, where an open endpoint is a convenience; in production it is
+    mandatory, because an unauthenticated refresh is an open trigger for a full
+    upstream fetch-and-score on a public URL. Missing it there disables the
+    endpoint rather than leaving it open.
     """
     expected = (os.getenv("REFRESH_TOKEN") or "").strip()
-    if expected and x_refresh_token != expected:
+    if not expected:
+        if _is_production():
+            log.error("POST /api/refresh refused: REFRESH_TOKEN is not set")
+            raise HTTPException(status_code=503, detail="refresh endpoint is not configured")
+    elif x_refresh_token != expected:
         raise HTTPException(status_code=401, detail="missing or invalid X-Refresh-Token")
     result = refresh_cache("manual")
     return {**result, "next_refresh_at": scheduler.next_run_time()}

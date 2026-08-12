@@ -12,6 +12,12 @@ dist
 dist-ssr
 *.local
 
+# Environment files hold the deployed API base URL -- never commit them.
+# .env.example is the checked-in, placeholder-only template.
+.env
+.env.*
+!.env.example
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

@@ -1,5 +1,8 @@
-# holds the live API endpoint URLs -- must never be committed
+# holds the live API endpoint URLs -- must never be committed.
+# .env.example is the checked-in, placeholder-only template.
 .env
+.env.*
+!.env.example
 
 # live-serving cache, regenerated on every refresh (output/ stays tracked as the
 # manual CLI export target)
