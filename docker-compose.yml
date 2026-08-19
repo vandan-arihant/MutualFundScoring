@@ -34,7 +34,7 @@ services:
     ports:
       # Bound to localhost by default so the port is not exposed directly to the
       # network -- nginx or the load balancer terminates TLS in front of it.
-      - "${API_BIND:-127.0.0.1}:${API_PORT:-8000}:8000"
+      - "${API_BIND:-127.0.0.1}:${API_PORT:-9000}:8000"
     volumes:
       # Survives restarts so the service serves last-good data immediately
       # instead of an empty table while the first refresh runs.
@@ -54,7 +54,7 @@ services:
     environment:
       TZ: Asia/Kolkata
     ports:
-      - "${DASHBOARD_BIND:-127.0.0.1}:${DASHBOARD_PORT:-8080}:80"
+      - "${DASHBOARD_BIND:-127.0.0.1}:${DASHBOARD_PORT:-9080}:80"
     # No depends_on: the dashboard is static files and never talks to the API
     # container. The browser calls the API directly, over the public hostname.
 
