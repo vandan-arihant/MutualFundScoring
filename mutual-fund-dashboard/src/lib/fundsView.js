@@ -134,7 +134,7 @@ function csvColumns(paramColumns) {
     { header: 'Data Completeness', get: (row) => formatCompleteness(row.data_completeness) },
   ]
 
-  for (const group of ['Return', 'Risk', 'Cost & Operational']) {
+  for (const group of ['Return', 'Risk', 'Cost & Operational', 'Portfolio & Structure', 'Fund Quality']) {
     columns.push({
       header: `${group} (avg score)`,
       get: (row) => row.category_scores?.[group],

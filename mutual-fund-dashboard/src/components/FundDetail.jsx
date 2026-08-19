@@ -7,9 +7,9 @@ import styles from './FundDetail.module.css'
  * Everything the model knows about one fund.
  *
  * The table shows a chosen slice; this panel is the guarantee that no field is
- * unreachable -- identity, the composite block, the three group roll-ups, and
- * every parameter with its weight, its raw input value and the score that came
- * out. Exit-load text gets its own block because it is a sentence, not a number.
+ * unreachable -- identity, the composite block, the group roll-ups, and every
+ * parameter with its weight, its raw input value and the score that came out.
+ * Exit-load text gets its own block because it is a sentence, not a number.
  */
 
 function Field({ label, value, mono = false, title }) {
@@ -28,9 +28,9 @@ export default function FundDetail({ row, paramColumns }) {
   const groupScores = row.category_scores ?? {}
   const exitLoad = metrics['Exit Load Structure']
 
-  /* Roll-ups in matrix order (Return, Risk, Cost & Operational), taken from the
-     parameter order rather than from the object's own key order -- the backend
-     builds category_scores from a set, so its iteration order is arbitrary. */
+  /* Roll-ups in matrix order, taken from the parameter order rather than from
+     the object's own key order -- the backend builds category_scores from a
+     set, so its iteration order is arbitrary. */
   const orderedGroups = []
   for (const column of paramColumns) {
     if (!orderedGroups.includes(column.group) && column.group in groupScores) {

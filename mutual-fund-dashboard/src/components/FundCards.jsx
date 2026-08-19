@@ -7,8 +7,8 @@ import styles from './FundCards.module.css'
 /**
  * The phone view. Not a squeezed table -- an 18-column grid cannot be made
  * usable at 390px, so each fund becomes a card: identity and verdict up front,
- * the nine parameter scores as a compact grid, and the same FundModal on tap.
- * Every field stays reachable.
+ * the full set of parameter scores as a compact grid, and the same FundModal on
+ * tap. Every field stays reachable.
  */
 
 const STAGGER_STEP_MS = 28

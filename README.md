@@ -1,12 +1,13 @@
 # Equity Mutual Fund Scoring
 
-Scores the Indian equity mutual fund universe against a 9-parameter matrix and
+Scores the Indian equity mutual fund universe against a 13-parameter matrix and
 serves the results to a React dashboard. Scores refresh once a day.
 
 ```
 EquityMFScoringModel/     FastAPI service + the scoring model
   code/
-    score_intersection_funds.py   the scoring matrix (also a standalone CLI)
+    score_intersection_funds_13param.py   the scoring matrix (also a standalone CLI)
+    extra_params.py                       the 4 CMOTS-derived parameters
     data_sources.py               the only module that touches the live feeds
     cache_store.py                the served snapshot, mirrored to disk
     scheduler.py                  the daily refresh (APScheduler cron)
@@ -19,7 +20,7 @@ mutual-fund-dashboard/    React + Vite dashboard
 ## How it works
 
 Two upstream feeds — a scheme master and a risk-metrics set — are joined on the
-scheme code. Funds carrying all 9 parameters form the scored universe; each
+scheme code. Funds carrying all 13 parameters form the scored universe; each
 parameter is scored 1–5 against category peers, then weighted into a composite
 that maps to a rating band and a recommendation.
 
@@ -76,7 +77,7 @@ The scoring model also runs standalone against the local snapshots, writing to
 `output/`:
 
 ```bash
-python code/score_intersection_funds.py --top 50
+python code/score_intersection_funds_13param.py --top 50
 ```
 
 ## API
@@ -101,7 +102,7 @@ Both halves ship a Dockerfile, so the server needs only Git, Docker Engine and
 Docker Compose:
 
 ```bash
-git clone https://github.com/Vandan1423/MutualFundScoring.git
+git clone https://github.com/vandan-arihant/MutualFundScoring.git
 cd MutualFundScoring
 cp .env.example .env        # fill in, see below
 docker compose up -d --build

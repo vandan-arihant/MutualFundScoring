@@ -25,6 +25,10 @@ export const PARAM_METRICS = {
   beta: { keys: ['Beta'], format: 'number' },
   exit_load_structure: { keys: ['Exit Load Structure'], format: 'text' },
   aum_size_category_adjusted: { keys: ['AUM Size (Cr)'], format: 'crore' },
+  portfolio_concentration: { keys: ['Top 10 Holdings (%)'], format: 'percent' },
+  sector_diversification: { keys: ['Sector Count (>=5% each)'], format: 'number' },
+  expense_ratio_vs_category: { keys: ['Expense Ratio (%)'], format: 'percent' },
+  amc_reputation: { keys: ['AMC Reputation Tier (1/3/5)'], format: 'number' },
 }
 
 /** Metric keys that identify a fund rather than measure it. */

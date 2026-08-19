@@ -71,6 +71,16 @@
   box-shadow: inset 0 -3px 0 var(--score-2-br);
 }
 
+.groupPortfolioStructure {
+  color: var(--score-4-fg);
+  box-shadow: inset 0 -3px 0 var(--score-4-br);
+}
+
+.groupFundQuality {
+  color: var(--brand);
+  box-shadow: inset 0 -3px 0 var(--brand-vivid);
+}
+
 .groupFundInfo {
   box-shadow: inset 0 -3px 0 var(--border-strong);
 }

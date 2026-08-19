@@ -262,6 +262,7 @@ export default function App() {
         lastUpdated={lastUpdated}
         nextRefreshAt={nextRefreshAt}
         fundCount={funds.length}
+        paramCount={columns.length}
         sourceMode={sourceMode}
         serverError={serverError}
         isRefreshing={isRefreshing}
@@ -370,8 +371,9 @@ export default function App() {
 
         <footer className={styles.footer}>
           <p>
-            Scored on 9 parameters from the Arihant equity scoring matrix. Composite is the weighted
-            mean of the parameters that could be scored; ratings follow the matrix’s own bands.
+            Scored on {columns.length} parameters from the Arihant equity scoring matrix. Composite is
+            the weighted mean of the parameters that could be scored; ratings follow the matrix’s own
+            bands.
           </p>
           <p className={styles.footerNote}>
             Data refreshes automatically once a day. This page re-checks when you return to the tab,

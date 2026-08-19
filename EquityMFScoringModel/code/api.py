@@ -35,7 +35,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 
 import scheduler
 from cache_store import get_rows, get_status, load_cache_from_disk, refresh_cache
-from score_intersection_funds import PARAM_CATEGORY, PARAM_LABELS, RATING_BANDS, WEIGHTS
+from score_intersection_funds_13param import PARAM_CATEGORY, PARAM_LABELS, RATING_BANDS, WEIGHTS
 
 log = logging.getLogger(__name__)
 
@@ -62,7 +62,7 @@ async def lifespan(_app):
 app = FastAPI(
     title="Equity MF Scoring API",
     version="1.0.0",
-    description="Daily-refreshed Equity mutual fund scores, built from the 9-parameter scoring matrix.",
+    description="Daily-refreshed Equity mutual fund scores, built from the 13-parameter scoring matrix.",
     lifespan=lifespan,
 )
 
@@ -87,7 +87,7 @@ app.add_middleware(
 
 
 def _columns():
-    """The 9 scored parameters as display metadata, derived from the scoring
+    """The 13 scored parameters as display metadata, derived from the scoring
     module's own PARAM_LABELS / PARAM_CATEGORY / WEIGHTS -- so the frontend never
     keeps a second copy of the labels, groupings or weights that could drift out
     of sync with the model."""

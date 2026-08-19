@@ -20,6 +20,7 @@ export default function AppHeader({
   lastUpdated,
   nextRefreshAt,
   fundCount,
+  paramCount,
   sourceMode,
   serverError,
   isRefreshing,
@@ -40,7 +41,8 @@ export default function AppHeader({
         <div className={styles.titles}>
           <h1 className={styles.title}>Equity Fund Scoring</h1>
           <p className={styles.subtitle}>
-            {fundCount ? `${fundCount.toLocaleString('en-IN')} funds` : 'Loading'} · 9 parameters
+            {fundCount ? `${fundCount.toLocaleString('en-IN')} funds` : 'Loading'}
+            {paramCount ? ` · ${paramCount} parameters` : null}
           </p>
         </div>
       </div>

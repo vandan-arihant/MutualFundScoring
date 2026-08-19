@@ -28,7 +28,7 @@ from pathlib import Path
 import pandas as pd
 
 from data_sources import _redact, fetch_risk_data, fetch_scheme_masters, source_mode
-from score_intersection_funds import (
+from score_intersection_funds_13param import (
     build_dataset_records,
     build_intersection_universe,
     build_score_rows,
